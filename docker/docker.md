@@ -340,6 +340,24 @@ docker volume ls 列出所有的volume
 docker volume prune 删除未使用的volume
 docker volume rm 删除一个或多个指定的volume
 
+### 创建一个数据卷，查看数据卷在宿主机的目录位置
+1. 创建数据卷
+   > docker volume create html
+2. 查看所有数据
+   > docker volume ls
+3. 查看数据卷详细信息卷
+   > docker volume inspect html
+
+### 挂载数据卷
+-v 数据卷:容器内的目录
+>例：docker run --name mn -v html:/usr/share/nginx/html -p 80:80 -d nginx
+若挂载的数据卷未创建，数据卷在容器创建时自动创建。
+查看数据卷位置
+> docker volume inspect html
+进入html数据卷所在位置
+> cd /var/lib/docker/volumes/html/_data
+修改文件
+> vi index.html
 
 
 
