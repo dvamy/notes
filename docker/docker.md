@@ -359,6 +359,16 @@ docker volume rm 删除一个或多个指定的volume
 修改文件
 > vi index.html
 
+### mysql
+
+docker run \
+--name mysql \
+-e MYSQL_ROOT_PASSWORD=111111 \
+-p 3307:3306 \
+-v /tmp/mysql/conf/hmy.cnf:/etc/mysql/conf.d/hmy.cnf \
+-v /tmp/mysql/data:/var/lib/mysql \
+-d \
+mysql:5.7.25
 # 自定义镜像
 - 镜像是将镜像程序及其所需要的系统函数库、环境、配置、依赖打包而成。
 ### 镜像结构
