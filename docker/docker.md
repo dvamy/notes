@@ -380,12 +380,81 @@ mysql:5.7.25
 Dockerfile是以一个文本文件，其中包含一个个的指令，用指令来说明要执行什么操作系统来构建镜像；每一个指令都会形成一层layer。
 ![Alt text](image.png)
 
+简单来说，在本地文件夹中创建一个名为 Dockerfile 的文件，并在其中编写 Dockerfile 指令。类似于我们学习过的脚本，将我们在上面学到的docker镜像，使用自动化的方式实现出来。
 
 
 
 
 
+### 参数介绍
+1. FROM：指定基础镜像，在构建 Docker 镜像时，Docker 会先从 Docker Hub 上拉取指定基础镜像，然后在其基础上构建出新的镜像。其中，是要使用的基础镜像的名称， 是其版本号（可选）。如果不指定版本号，则默认使用 latest 版本
+> FROM java:8-alpine
 
+2. COPY：它可以将主机上的文件或目录复制到 Docker 镜像中，方便在容器中使用。
+> COPY ./docker-demo.jar /tmp/app.jar
+
+3. EXPOSE ：暴露端口，命令用于指定 Docker 镜像中的容器应该监听哪些端口。它并不会实际上打开这些端口，而只是标记这些端口应该被监听。
+> EXPOSE 8090
+
+4. 入口，java项目的启动命令
+> ENTRYPOINT java -jar /tmp/app.jar
+
+### Docker 运行DockerFile 文件
+docker build：它从 Dockerfile 中读取指令，然后按照指令构建出一个新的 Docker 镜像
+
+-t：为生成的 Docker 镜像设置一个名称和标签
+
+镜像名：repository：tag
+
+.  :dockerfile所在目录
+
+> docker build -t javaweb:1.0 .
+
+### 运行镜像
+> docker run --name web -p 8090:8090 -d javaweb:1.0
+
+
+# DockerCompose
+基于compose文件帮我们快速部署分布式应用，而无需手动一个个创建和运行容器。
+
+### compose
+是一个文本文件，通过指令定义集群中的每个容器如何运行
+若干个docker run 命令的集合
+
+例：
+#### compose.yaml 配置实例定义容器部署
+version: "3.8"
+services:
+   mysql:
+      images:mysql:5.7.25
+      environment:
+         MYSQL_ROOT_PASSWORD:111111
+      volumes:
+         - /tmp/mysql/data:/var/lib/mysql
+         - /tmp/mysql/conf/hmy.cnf:/etc/mysql/conf.d/hmy.cnf
+   web:
+      build: .
+      ports:
+      - "8090:8090"
+   
+##### 应docker run命令
+docker run \
+--name mysql \
+-e MYSQL_ROOT_PASSWORD=111111 \
+-p 3306:3306 \
+-v /tmp/mysql/conf/hmy.cnf:/etc/mysql/conf.d/hmy.cnf \
+-v /tmp/mysql/data:/var/lib/mysql \
+-d mysql:5.7.25
+
+docker build -t web:1.0
+docker run --name web -p 8090:8090 -d web:1.0
+
+通过对比可以看到
+compose文件中没有配置-p 3306:3306端口
+在微服务集群中，mysql仅仅是供给给集群内服务使用
+没有-d ，默认后台运行
+
+而且是通过build指令构建镜像并且运行，配置端口8090 
 
 
 
